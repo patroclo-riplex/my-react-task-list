@@ -1,4 +1,3 @@
-
 import React from 'react';
 import './App.css';
 import Header from './components/Header';
@@ -18,7 +17,7 @@ function App() {
   } = useTask();
 
   return (
-    <div className='App'>
+    <div className="App">
       <Header tasksCount={tasksCount} pendingTasksCount={pendingTasksCount} />
       <TaskList handleNewTask={handleNewTask} />
       <Task

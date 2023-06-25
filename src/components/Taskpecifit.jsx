@@ -1,61 +1,83 @@
-import React, { useRef, useState } from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa'
-import { useForm } from '../hooks/useForm'
+import React, { useRef, useState } from 'react';
+import { FaEdit, FaTrash, FaCheckCircle } from 'react-icons/fa';
+import { useForm } from '../hooks/useForm';
 
-export const Taskpecifit = ({task, handleCompleteTask, handleDeleteTask, handleUpdateTask}) => {
+export const Taskpecifit = ({ task, handleCompleteTask, handleDeleteTask, handleUpdateTask }) => {
+  const { updateName, updateDescription, onInputChange } = useForm({
+    updateName: task.name,
+    updateDescription: task.description,
+  });
 
-    const {updateDescription, onInputChange} = useForm({
-        updateDescription: task.description
-    })
+  const [editing, setEditing] = useState(false);
+  const nameInputRef = useRef(null);
+  const descriptionInputRef = useRef(null);
 
-    const [disabled, setDisable] = useState(true)
-    const focusInputRef = useRef()
+  const handleEditClick = () => {
+    setEditing(true);
+  };
 
-    const onSubmitUpdate = e => {
-        e.preventDefault()
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
 
-        const id = task.id
-        const description = updateDescription
+    const updatedTask = {
+      ...task,
+      name: updateName,
+      description: updateDescription,
+    };
 
+    handleUpdateTask(updatedTask);
 
-        handleUpdateTask(id, description);
-
-        setDisable(!disabled)
-
-        focusInputRef.current.focus()
-    }
-
+    setEditing(false);
+  };
 
   return (
     <li>
-        <span
-            onClick={() => handleCompleteTask(task.id)}
-        >
-            <label className={`container-done ${task.done ? 'active' : ''}`}></label>
-        </span>
-        <form onSubmit={onSubmitUpdate}>
-            <input 
-            type='text' 
-            className={`input-update ${
-                task.done ? 'text-decoration-dashed' : ''
-            }`}
-            name='updateDescription' 
-            value={updateDescription} 
-            onChange={onInputChange}
-            placeholder='¿Que hay que hacer?' 
-            readOnly={disabled}
-            ref={focusInputRef}
-        />
-
-            <button type='submit' >
-                <FaEdit />
+      <span onClick={() => handleCompleteTask(task.id)}>
+        <label className={`container-done ${task.done ? 'active' : ''}`} />
+      </span>
+      <div className={`task-name ${task.done ? 'text-decoration-dashed' : ''}`}>
+        {editing ? (
+          <form onSubmit={handleFormSubmit}>
+            <input
+              type="text"
+              className="input-update"
+              name="updateName"
+              value={updateName}
+              onChange={onInputChange}
+              ref={nameInputRef}
+            />
+            <button type="submit">
+              <FaCheckCircle />
             </button>
-
-        </form>
-
-        <button onClick={() => handleDeleteTask(task.id)}>     
-            <FaTrash /> 
-        </button>
+          </form>
+        ) : (
+          <div>{task.name}</div>
+        )}
+      </div>
+      <div className={`task-description ${task.done ? 'text-decoration-dashed' : ''}`}>
+        {editing ? (
+          <form onSubmit={handleFormSubmit}>
+            <textarea
+              className="input-update"
+              name="updateDescription"
+              value={updateDescription}
+              onChange={onInputChange}
+              ref={descriptionInputRef}
+            />
+            <button type="submit">
+                <FaCheckCircle />
+            </button>
+          </form>
+        ) : (
+          <div>{task.description}</div>
+        )}
+      </div>
+      <button onClick={handleEditClick}>
+        <FaEdit />
+      </button>
+      <button onClick={() => handleDeleteTask(task.id)}>
+        <FaTrash />
+      </button>
     </li>
-  )
-}
+  );
+};
